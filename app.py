@@ -5,6 +5,7 @@ import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func ,inspect
+import pandas as pd
 
 from flask import Flask, jsonify
 
@@ -16,7 +17,6 @@ engine = create_engine("sqlite:///Resources/hawaii.sqlite")
 Base = automap_base()
 # reflect the tables
 Base.prepare(engine, reflect=True)
-Base.classes.keys()
 
 # Save references to each table
 Measurement = Base.classes.measurement
@@ -25,10 +25,7 @@ Station = Base.classes.station
 # Create our session (link) from Python to the DB
 session = Session(engine)
 
-inspector = inspect(engine)
-inspector.get_table_names()
 
-# data_setup = datetime(Measurement.date)
 
 # Flask Setup
 #################################################
@@ -49,12 +46,13 @@ def precipitation():
     results1 = session.query(Measurement.date, Measurement.prcp).filter(Measurement.date>="2016-08-23").all()
     first_dict = list(np.ravel(results1))
 #  Convert the query results to a Dictionary using `date` as the key and `tobs` as the value.
-    # first_dict = []
-    # for temps in results1:
-    #     temps_dict = {}
-    #     temps_dict["date"] = Measurement.date
-    #     temps_dict["tobs"] = Measurement.tobs
-    #     first_dict.append(temps_dict)
+     first_dict = []
+     for temps in results1:
+     temps_dict = {}
+     temps_dict["date"] = Measurement.date
+     temps_dict["tobs"] = Measurement.tobs
+     first_dict.append(temps_dict)
+
 
 #  Return the JSON representation of your dictionary.
     return jsonify(first_dict)
@@ -68,12 +66,12 @@ def stations():
 
     sec_dict = list(np.ravel(results2))
 # # #  Convert the query results to a Dictionary.
-# #     sec_dict = []
-# #     for sta in results2:
-# #         station_dict = {}
-# #         station_dict["station"] = Station.station
-# #         station_dict["name"] = Station.name
-# #         sec_dict.append(station_dict)
+    sec_dict = []
+    for sta in results2:
+       station_dict = {}
+         station_dict["station"] = Station.station
+        station_dict["name"] = Station.name
+       sec_dict.append(station_dict)
 
 # # #  Return the JSON representation of your dictionary.
 
@@ -94,27 +92,16 @@ def tobs():
 # # #  Convert the query results to a Dic
 
 # #  Convert the query results to a Dictionary.
-#     third_dict = []
-#     for temps in results3:
-#         temp_dict = {}
-#         temp_dict["date"] = Measurement.date
-#         temp_dict["tobs"] = Measurement.tobs
-#         third_dict.append(temp_dict)
+    third_dict = []
+   for temps in results3:
+       temp_dict = {}
+           temp_dict["date"] = Measurement.date
+                 temp_dict["tobs"] = Measurement.tobs
+   third_dict.append(temp_dict)
 
 # #  Return the JSON representation of your dictionary.
 
     return jsonify(temp_dict)
-
-
-# # * `/api/v1.0/<start>` and `/api/v1.0/<start>/<end>`
-
-# #   * Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start or start-end range.
-
-# #   * When given the start only, calculate `TMIN`, `TAVG`, and `TMAX` for all dates greater than and equal to the start date.
-
-# #   * When given the start and the end date, calculate the `TMIN`, `TAVG`, and `TMAX` for dates between the start and end date inclusive.
-
-
 @app.route("/api/v1.0/<date>")
 
 def start1(date):
@@ -124,18 +111,11 @@ def start1(date):
    
 
     
-    # temp_dates = list(np.ravel(results4))
+     temp_dates = list(np.ravel(results4))
     # #  Convert the query results to a Dictionary.
     five_dict = []
     for s in results4:
         
-        # start_dict = {}
-        # start_dict["Date"] = float(s[0])
-        # start_dict["Avg"] = float(s[1])
-        # start_dict["Min"] = float(s[2])
-        # start_dict["Max"] = float(s[3])
-        # five_dict.append(start_dict)
-
         start_dict = {}
         start_dict["Date"] = s.Date
         start_dict["Avg"] = s.func.avg(Measurement.tobs)
